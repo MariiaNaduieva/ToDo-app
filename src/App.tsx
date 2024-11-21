@@ -1,24 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { TaskList } from "./components/TaskList";
+import { Stack, Typography } from "@mui/material";
+
+export type StatusType = "ToDo" | "In Progress" | "Done";
+export type Task = {
+  id: number;
+  name: string;
+  description: string;
+  status: StatusType;
+};
 
 export const App = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const addTask = (name: string, description: string) => {
+    const id = Date.now();
+    const newTask: Task = {
+      id,
+      name,
+      description,
+      status: "ToDo",
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const updateTaskStatus = (id: number, status: StatusType) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === id ? { ...task, status } : task))
+    );
+  };
+
+  const deleteTask = (id: number) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Stack spacing={4} margin={4}>
+      <Typography variant="h3">ToDo</Typography>
+      <TaskList
+        tasks={tasks}
+        onUpdateTaskStatus={updateTaskStatus}
+        onDeleteTask={deleteTask}
+        setTasks={setTasks}
+        addTask={addTask}
+      />
+    </Stack>
   );
-}
+};
